@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mingau Chat IA</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #1f1f3d;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    #chatBox {
+      width: 90%;
+      max-width: 600px;
+      margin-top: 60px;
+    }
+    #messages {
+      border: 1px solid #444;
+      padding: 10px;
+      height: 400px;
+      overflow-y: scroll;
+      background: #2c2c54;
+      border-radius: 8px;
+    }
+    .message {
+      margin-bottom: 10px;
+    }
+    #input {
+      display: flex;
+      margin-top: 10px;
+    }
+    #userInput {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 4px 0 0 4px;
+      outline: none;
+    }
+    #sendBtn {
+      padding: 10px;
+      border: none;
+      background: #00e6ac;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 0 4px 4px 0;
+    }
+    #adminPanel, #changeIA {
+      display: none;
+      margin-top: 20px;
+    }
+    .btn {
+      background: #3b3b98;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+      border: none;
+    }
+    #deviceSelector, #emailPrompt {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    input[type="email"] {
+      padding: 8px;
+      border-radius: 4px;
+      border: none;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="deviceSelector">
+  <h2>Qual dispositivo você está usando?</h2>
+  <button onclick="selectDevice('mobile')">📱 Celular</button>
+  <button onclick="selectDevice('desktop')">🖥️ Computador</button>
+</div>
+
+<div id="emailPrompt" style="display:none;">
+  <h2>Digite seu e-mail para continuar</h2>
+  <input type="email" id="emailInput" placeholder="exemplo@email.com" />
+  <button onclick="validateEmail()">Continuar</button>
+</div>
+
+<div style="margin-top: 20px;">
+  <button class="btn" onclick="window.open('https://miguel918-hub.github.io/Hyder-Raids/', '_blank')">🚀 Bot Raid Discord</button>
+  <button class="btn" onclick="window.open('https://miguel918-hub.github.io/mingau.apps.github.io/', '_blank')">🧠 Mingau App – Cantadas por Imagem</button>
+</div>
+
+<h1>Mingau Chat IA</h1>
+<div id="chatBox">
+  <div id="messages"></div>
+  <div id="input">
+    <input type="text" id="userInput" placeholder="Digite sua pergunta ou comando..." />
+    <button id="sendBtn">Enviar</button>
+  </div>
+</div>
+
+<div id="adminPanel">
+  <h2>Painel ADM</h2>
+  <input type="email" id="vipEmail" placeholder="Email para VIP" />
+  <button onclick="grantVIP()">Dar VIP</button>
+</div>
+
+<div id="changeIA">
+  <button class="btn" onclick="useVIPIA()">Mingau Chat IA VIP ✨</button>
+</div>
+
+<script>
+  const emailAdmin = "blackvendasblk@gmail.com";
+  const vips = new Set();
+  let currentEmail = "";
+  let vipAccess = false;
+
+  function selectDevice(device) {
+    document.body.style.background = device === "desktop" ? "#14142b" : "#1f1f3d";
+    document.getElementById("deviceSelector").style.display = "none";
+    document.getElementById("emailPrompt").style.display = "flex";
+  }
+
+  function validateEmail() {
+    const email = document.getElementById("emailInput").value.trim();
+    if (!email) return alert("Insira um email válido!");
+    currentEmail = email;
+
+    if (email === emailAdmin) {
+      vipAccess = true;
+      document.getElementById("adminPanel").style.display = "block";
+      document.getElementById("changeIA").style.display = "block";
+    } else if (vips.size < 10) {
+      vipAccess = true;
+      vips.add(email);
+      document.getElementById("changeIA").style.display = "block";
+    }
+    document.getElementById("emailPrompt").style.display = "none";
+  }
+
+  function grantVIP() {
+    const vipEmail = document.getElementById("vipEmail").value.trim();
+    if (currentEmail !== emailAdmin) return alert("Apenas administradores podem dar VIP.");
+    if (vipEmail) {
+      vips.add(vipEmail);
+      alert("VIP concedido para " + vipEmail);
+    }
+  }
+
+  function useVIPIA() {
+    if (!vipAccess) return alert("Apenas VIPs podem usar esta IA.");
+    alert("VIP IA ativada com sua chave pessoal.");
+    // Aqui seria conectado à API real da OpenAI
+  }
+
+  document.getElementById("sendBtn").onclick = () => {
+    const input = document.getElementById("userInput");
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    const div = document.createElement("div");
+    div.className = "message";
+    div.textContent = "👤 Você: " + msg;
+    document.getElementById("messages").appendChild(div);
+
+    const bot = document.createElement("div");
+    bot.className = "message";
+    bot.textContent = "🤖 Mingau: " + gerarResposta(msg);
+    document.getElementById("messages").appendChild(bot);
+
+    input.value = "";
+    document.getElementById("messages").scrollTop = 999999;
+
+    if (msg === "//Painel Adm" && currentEmail === emailAdmin) {
+      document.getElementById("adminPanel").style.display = "block";
+    }
+  };
+
+  function gerarResposta(msg) {
+    if (msg.toLowerCase().includes("lua roblox")) {
+      return "Claro! Aqui vai um exemplo:
+```lua
+print('Olá, mundo do Roblox!')
+```";
+    }
+    return "Desculpe, ainda estou aprendendo. Mas posso te ajudar com várias perguntas!";
+  }
+</script>
+</body>
+</html>
