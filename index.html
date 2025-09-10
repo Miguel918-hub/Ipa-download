@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instalar IPA</title>
+</head>
+<body style="font-family: Arial, sans-serif; text-align: center; margin: 40px;">
+  <h1>Instalador de Apps IPA</h1>
+  <p>Escolha seu arquivo IPA e clique em <b>Enviar</b> para gerar o link de instalação.</p>
+
+  <input type="file" id="fileInput" accept=".ipa"><br><br>
+  <button onclick="uploadIPA()" style="padding: 10px 20px; background: #007AFF; color: white; border: none; border-radius: 6px; font-size: 16px;">
+    Enviar IPA
+  </button>
+
+  <div id="result" style="margin-top: 30px;"></div>
+
+  <script>
+    async function uploadIPA() {
+      const fileInput = document.getElementById('fileInput');
+      if (!fileInput.files.length) {
+        alert('Escolha um arquivo IPA primeiro!');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('ipa', fileInput.files[0]);
+
+      const response = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await response.json();
+
+      if (data.installUrl) {
+        document.getElementById('result').innerHTML =
+          `<a href="${data.installUrl}" style="font-size:20px;">📲 Instalar App</a>`;
+      } else {
+        document.getElementById('result').innerText = 'Erro ao gerar link.';
+      }
+    }
+  </script>
+</body>
+</html>
