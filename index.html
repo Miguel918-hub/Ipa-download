@@ -7,35 +7,65 @@
 </head>
 <body style="font-family: Arial, sans-serif; text-align: center; margin: 40px;">
   <h1>Instalador de Apps IPA</h1>
-  <p>Escolha seu arquivo IPA e clique em <b>Enviar</b> para gerar o link de instalação.</p>
+  <p>Cole o link do seu IPA assinado e clique em Gerar Instalação.</p>
 
-  <input type="file" id="fileInput" accept=".ipa"><br><br>
-  <button onclick="uploadIPA()" style="padding: 10px 20px; background: #007AFF; color: white; border: none; border-radius: 6px; font-size: 16px;">
-    Enviar IPA
+  <input type="url" id="ipaUrl" placeholder="https://exemplo.com/app.ipa" style="width: 80%; padding: 10px;"><br><br>
+  <button onclick="generateLink()" style="padding: 10px 20px; background: #007AFF; color: white; border: none; border-radius: 6px; font-size: 16px;">
+    Gerar Link de Instalação
   </button>
 
   <div id="result" style="margin-top: 30px;"></div>
 
   <script>
-    async function uploadIPA() {
-      const fileInput = document.getElementById('fileInput');
-      if (!fileInput.files.length) {
-        alert('Escolha um arquivo IPA primeiro!');
+    function generateLink() {
+      const ipaUrl = document.getElementById("ipaUrl").value.trim();
+      if (!ipaUrl.endsWith(".ipa")) {
+        alert("Por favor, insira um link válido para o arquivo .ipa");
         return;
       }
 
-      const formData = new FormData();
-      formData.append('ipa', fileInput.files[0]);
+      const plist = `
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>items</key>
+  <array>
+    <dict>
+      <key>assets</key>
+      <array>
+        <dict>
+          <key>kind</key>
+          <string>software-package</string>
+          <key>url</key>
+          <string>${ipaUrl}</string>
+        </dict>
+      </array>
+      <key>metadata</key>
+      <dict>
+        <key>bundle-identifier</key>
+        <string>com.seudominio.dinamico</string>
+        <key>bundle-version</key>
+        <string>1.0</string>
+        <key>kind</key>
+        <string>software</string>
+        <key>title</key>
+        <string>Meu App</string>
+      </dict>
+    </dict>
+  </array>
+</dict>
+</plist>
+`;
 
-      const response = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await response.json();
+      // Criar arquivo temporário
+      const blob = new Blob([plist], { type: "application/xml" });
+      const plistUrl = URL.createObjectURL(blob);
 
-      if (data.installUrl) {
-        document.getElementById('result').innerHTML =
-          `<a href="${data.installUrl}" style="font-size:20px;">📲 Instalar App</a>`;
-      } else {
-        document.getElementById('result').innerText = 'Erro ao gerar link.';
-      }
+      const installLink = `itms-services://?action=download-manifest&url=${plistUrl}`;
+
+      document.getElementById("result").innerHTML =
+        `<a href="${installLink}" style="font-size:20px;">📲 Instalar App</a>`;
     }
   </script>
 </body>
