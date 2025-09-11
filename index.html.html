@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INSTALL IPA</title>
+    <style>
+        body {
+            background-color: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+        .upload-box {
+            background: #1c1c1c;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 400px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+        }
+        input[type="file"] {
+            display: none;
+        }
+        label {
+            background: #007aff;
+            padding: 12px 20px;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #34c759;
+            border: none;
+            padding: 12px 20px;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        #progress {
+            width: 0;
+            height: 10px;
+            background: #34c759;
+            margin-top: 15px;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1>INSTALL IPA</h1>
+    <div class="upload-box">
+        <form id="uploadForm">
+            <input type="file" id="ipaFile" accept=".ipa">
+            <label for="ipaFile">Escolher Arquivo IPA</label>
+            <br>
+            <button type="button" onclick="startUpload()">Instalar</button>
+        </form>
+        <div style="background:#333; border-radius:5px; margin-top:15px;">
+            <div id="progress"></div>
+        </div>
+    </div>
+
+    <script>
+        function startUpload() {
+            const fileInput = document.getElementById('ipaFile');
+            if (!fileInput.files.length) {
+                alert('Selecione um arquivo IPA primeiro!');
+                return;
+            }
+
+            let progress = document.getElementById('progress');
+            progress.style.width = "0%";
+            let width = 0;
+            let interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    alert("Upload concluído! Agora o servidor pode assinar o app.");
+                } else {
+                    width += 5;
+                    progress.style.width = width + "%";
+                }
+            }, 200);
+        }
+    </script>
+</body>
+</html>
