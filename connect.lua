@@ -7,8 +7,8 @@ local pgsql = {}
 -- Configurações do banco (altere para os seus dados)
 pgsql.host = "localhost"       -- IP ou hostname do servidor PostgreSQL
 pgsql.port = 5432              -- Porta padrão do PostgreSQL
-pgsql.user = "seu_usuario"     -- Usuário do banco
-pgsql.password = "sua_senha"   -- Senha do usuário
+pgsql.user = "NexusHubAdmin"     -- Usuário do banco
+pgsql.password = "fassbinder2014"   -- Senha do usuário
 pgsql.database = "nexushub"    -- Nome do banco de dados
 
 -- Função para criar a conexão
